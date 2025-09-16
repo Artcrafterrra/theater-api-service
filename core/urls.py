@@ -16,8 +16,36 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from cinema.views import (
+    ActorViewSet,
+    GenreViewSet,
+    TheatreHallViewSet,
+    PlayViewSet,
+    PerformanceViewSet,
+    ReservationViewSet,
+)
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+router = DefaultRouter()
+router.register("actors", ActorViewSet, basename="actor")
+router.register("genres", GenreViewSet, basename="genre")
+router.register("halls", TheatreHallViewSet, basename="hall")
+router.register("plays", PlayViewSet, basename="play")
+router.register("performances", PerformanceViewSet, basename="performance")
+router.register("reservations", ReservationViewSet, basename="reservation")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/", include(router.urls)),
+    path("api/auth/jwt/", TokenObtainPairView.as_view(), name="jwt_obtain"),
+    path(
+        "api/auth/jwt/refresh/",
+        TokenRefreshView.as_view(),
+        name="jwt_refresh",
+    ),
 ]
