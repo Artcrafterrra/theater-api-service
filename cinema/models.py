@@ -28,7 +28,9 @@ class Genre(models.Model):
 class TheatreHall(models.Model):
     name = models.CharField(max_length=128, unique=True)
     rows = models.PositiveIntegerField(validators=[MinValueValidator(1)])
-    seats_in_row = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    seats_in_row = models.PositiveIntegerField(
+        validators=[MinValueValidator(1)]
+    )
 
     class Meta:
         ordering = ["name"]
@@ -55,7 +57,9 @@ class Play(models.Model):
 
 
 class Performance(models.Model):
-    play = models.ForeignKey(Play, on_delete=models.CASCADE, related_name="performances")
+    play = models.ForeignKey(
+        Play, on_delete=models.CASCADE, related_name="performances"
+    )
     theatre_hall = models.ForeignKey(
         TheatreHall, on_delete=models.PROTECT, related_name="performances"
     )
@@ -71,7 +75,9 @@ class Performance(models.Model):
 
 class Reservation(models.Model):
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reservations"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="reservations",
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -105,7 +111,11 @@ class Ticket(models.Model):
         ordering = ["row", "seat"]
 
     def __str__(self) -> str:
-        status = "free" if self.reservation_id is None else f"res:{self.reservation_id}"
+        status = (
+            "free"
+            if self.reservation_id is None
+            else f"res:{self.reservation_id}"
+        )
         return f"T({self.performance_id}) r{self.row}s{self.seat} [{status}]"
 
     @property

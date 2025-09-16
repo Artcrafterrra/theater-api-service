@@ -4,7 +4,9 @@ from cinema.models import Performance, Ticket
 
 
 @receiver(post_save, sender=Performance)
-def create_tickets_for_performance(sender, instance: Performance, created, **kwargs):
+def create_tickets_for_performance(
+    sender, instance: Performance, created, **kwargs
+):
     if not created:
         return
     hall = instance.theatre_hall
