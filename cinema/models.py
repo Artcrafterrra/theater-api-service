@@ -63,7 +63,6 @@ class Performance(models.Model):
 
     class Meta:
         ordering = ["show_time"]
-        # один і той самий зал не може мати два ідентичні сеанси в один час
         unique_together = ("theatre_hall", "show_time")
 
     def __str__(self) -> str:
