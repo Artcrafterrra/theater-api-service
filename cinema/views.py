@@ -218,3 +218,10 @@ class ReservationViewSet(
             return self.get_paginated_response(ser.data)
         ser = self.get_serializer(qs, many=True)
         return response.Response(ser.data)
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        reservation = serializer.save()
+        out = ReservationListSerializer(reservation)
+        return response.Response(out.data, status=201)

@@ -6,18 +6,28 @@ from cinema.models import Actor, Genre, Play
 class TestPlayAPI(TestCase):
     def setUp(self):
         self.client = APIClient()
-        self.actor1 = Actor.objects.create(first_name="Tom", last_name="Hardy")
-        self.actor2 = Actor.objects.create(first_name="Emily", last_name="Blunt")
+        self.actor1 = Actor.objects.create(
+            first_name="Tom", last_name="Hardy"
+        )
+        self.actor2 = Actor.objects.create(
+            first_name="Emily", last_name="Blunt"
+        )
         self.genre1 = Genre.objects.create(name="Drama")
         self.genre2 = Genre.objects.create(name="Thriller")
-        self.play = Play.objects.create(title="Edge of Stage", description="Test play")
+        self.play = Play.objects.create(
+            title="Edge of Stage", description="Test play"
+        )
         self.play.actors.set([self.actor1, self.actor2])
         self.play.genres.set([self.genre1, self.genre2])
 
     def test_list_returns_nested_actors_and_genres(self):
         resp = self.client.get("/api/plays/")
         self.assertEqual(resp.status_code, 200)
-        data = resp.data["results"] if isinstance(resp.data, dict) and "results" in resp.data else resp.data
+        data = (
+            resp.data["results"]
+            if isinstance(resp.data, dict) and "results" in resp.data
+            else resp.data
+        )
         self.assertTrue(len(data) >= 1)
         item = data[0]
         self.assertIsInstance(item["actors"], list)

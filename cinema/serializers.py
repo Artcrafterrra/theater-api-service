@@ -50,6 +50,7 @@ class PerformanceSerializer(serializers.ModelSerializer):
         model = Performance
         fields = ("id", "play", "theatre_hall", "show_time")
 
+
 class PlayReadSerializer(serializers.ModelSerializer):
     actors = ActorSerializer(many=True, read_only=True)
     genres = GenreSerializer(many=True, read_only=True)
@@ -66,6 +67,8 @@ class PerformanceReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Performance
         fields = ("id", "play", "theatre_hall", "show_time")
+
+
 # ... existing code ...
 
 
