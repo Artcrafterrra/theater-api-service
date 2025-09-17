@@ -72,3 +72,9 @@ if settings.DEBUG:
     urlpatterns += [
         path("api-auth/", include("rest_framework.urls")),
     ]
+    try:
+        import debug_toolbar  # type: ignore
+    except Exception:
+        debug_toolbar = None
+    if debug_toolbar:
+        urlpatterns += [path("__debug__/", include("debug_toolbar.urls"))]

@@ -69,9 +69,6 @@ class PerformanceReadSerializer(serializers.ModelSerializer):
         fields = ("id", "play", "theatre_hall", "show_time")
 
 
-# ... existing code ...
-
-
 class PlayCreateUpdateSerializer(serializers.ModelSerializer):
     actors = serializers.PrimaryKeyRelatedField(
         queryset=Actor.objects.all(), many=True, required=False

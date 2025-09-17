@@ -58,6 +58,17 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+try:
+    import debug_toolbar  # type: ignore
+    _HAS_DDT = True
+except Exception:
+    _HAS_DDT = False
+
+if DEBUG and _HAS_DDT:
+    INSTALLED_APPS.append("debug_toolbar")
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    INTERNAL_IPS = ["127.0.0.1"]
+
 ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
