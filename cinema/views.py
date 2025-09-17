@@ -1,5 +1,9 @@
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
+from drf_spectacular.utils import (
+    extend_schema,
+    OpenApiParameter,
+    extend_schema_view,
+)
 from rest_framework import viewsets, permissions, response
 
 from cinema.models import (
@@ -18,8 +22,8 @@ from cinema.serializers import (
     PerformanceSerializer,
     ReservationCreateSerializer,
     ReservationListSerializer,
-    PerformanceReadSerializer, \
-    PlayReadSerializer
+    PerformanceReadSerializer,
+    PlayReadSerializer,
 )
 from cinema.pagination import DefaultPagination
 
@@ -57,22 +61,30 @@ class TheatreHallViewSet(StaffWriteReadOnlyElse):
             OpenApiParameter(
                 name="genres__in",
                 description="Separated list of genre IDs.",
-                required=False, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY,
+                required=False,
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
             ),
             OpenApiParameter(
                 name="actors__in",
                 description="Separated list of actor IDs.",
-                required=False, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY,
+                required=False,
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
             ),
             OpenApiParameter(
                 name="search",
                 description="Search for mane or surname.",
-                required=False, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY,
+                required=False,
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
             ),
             OpenApiParameter(
                 name="ordering",
                 description="Sorting: `title` or `-title`.",
-                required=False, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY,
+                required=False,
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
             ),
         ],
         tags=["Plays"],
@@ -98,14 +110,40 @@ class PlayViewSet(StaffWriteReadOnlyElse):
             return PlayReadSerializer
         return PlaySerializer
 
+
 @extend_schema_view(
     list=extend_schema(
         parameters=[
-            OpenApiParameter(name="play", description="ID paste", type=OpenApiTypes.INT, location=OpenApiParameter.QUERY),
-            OpenApiParameter(name="show_time__date", description="Date seance `YYYY-MM-DD`", type=OpenApiTypes.DATE, location=OpenApiParameter.QUERY),
-            OpenApiParameter(name="show_time__gte", description="Starts from date/time", type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-            OpenApiParameter(name="show_time__lte", description="To date/time", type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-            OpenApiParameter(name="ordering", description="Sorting: `show_time` or `-show_time`", type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name="play",
+                description="ID paste",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="show_time__date",
+                description="Date seance `YYYY-MM-DD`",
+                type=OpenApiTypes.DATE,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="show_time__gte",
+                description="Starts from date/time",
+                type=OpenApiTypes.DATETIME,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="show_time__lte",
+                description="To date/time",
+                type=OpenApiTypes.DATETIME,
+                location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="ordering",
+                description="Sorting: `show_time` or `-show_time`",
+                type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY,
+            ),
         ],
         tags=["Performances"],
     ),

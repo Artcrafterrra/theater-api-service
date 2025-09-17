@@ -1,6 +1,14 @@
 from django.contrib import admin
 
-from cinema.models import Actor, Genre, TheatreHall, Play, Performance, Ticket, Reservation
+from cinema.models import (
+    Actor,
+    Genre,
+    TheatreHall,
+    Play,
+    Performance,
+    Ticket,
+    Reservation,
+)
 
 
 @admin.register(Actor)
@@ -43,4 +51,3 @@ class TicketAdmin(admin.ModelAdmin):
     list_display = ("id", "performance", "row", "seat", "reservation")
     list_filter = ("performance", "reservation")
     search_fields = ("performance__play__title",)
-

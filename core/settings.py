@@ -164,4 +164,3 @@ SPECTACULAR_SETTINGS = {
         }
     },
 }
-
