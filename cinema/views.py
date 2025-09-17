@@ -1,15 +1,13 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
-from rest_framework import viewsets, permissions, decorators, response, status
-from django.db.models import Count
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, permissions, response
+
 from cinema.models import (
     Actor,
     Genre,
     TheatreHall,
     Play,
     Performance,
-    Ticket,
     Reservation,
 )
 from cinema.serializers import (
@@ -18,17 +16,12 @@ from cinema.serializers import (
     TheatreHallSerializer,
     PlaySerializer,
     PerformanceSerializer,
-    TicketSerializer,
     ReservationCreateSerializer,
     ReservationListSerializer,
-    TicketShortSerializer,
-    SeatSerializer,
-    ReservationCreateSerializer,
-    ReservationListSerializer,
-    TicketShortSerializer,
-    PlayReadSerializer,
-    PerformanceReadSerializer
+    PerformanceReadSerializer, \
+    PlayReadSerializer
 )
+from cinema.pagination import DefaultPagination
 
 
 class StaffWriteReadOnlyElse(viewsets.ModelViewSet):
@@ -36,6 +29,8 @@ class StaffWriteReadOnlyElse(viewsets.ModelViewSet):
         if self.request.method in permissions.SAFE_METHODS:
             return [permissions.AllowAny()]
         return [permissions.IsAdminUser()]
+
+    pagination_class = DefaultPagination
 
 
 class ActorViewSet(StaffWriteReadOnlyElse):
@@ -159,6 +154,7 @@ class ReservationViewSet(
     viewsets.GenericViewSet,
 ):
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = DefaultPagination
 
     def get_queryset(self):
         return Reservation.objects.filter(
@@ -171,14 +167,10 @@ class ReservationViewSet(
         return ReservationListSerializer
 
     def list(self, request):
-        ser = self.get_serializer(self.get_queryset(), many=True)
+        qs = self.get_queryset()
+        page = self.paginate_queryset(qs)
+        if page is not None:
+            ser = self.get_serializer(page, many=True)
+            return self.get_paginated_response(ser.data)
+        ser = self.get_serializer(qs, many=True)
         return response.Response(ser.data)
-
-    def create(self, request):
-        ser = self.get_serializer(
-            data=request.data, context={"request": request}
-        )
-        ser.is_valid(raise_exception=True)
-        reservation = ser.save()
-        out = ReservationListSerializer(reservation)
-        return response.Response(out.data, status=status.HTTP_201_CREATED)
