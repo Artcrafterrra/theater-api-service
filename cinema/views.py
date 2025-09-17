@@ -25,7 +25,9 @@ from cinema.serializers import (
     SeatSerializer,
     ReservationCreateSerializer,
     ReservationListSerializer,
-    TicketShortSerializer
+    TicketShortSerializer,
+    PlayReadSerializer,
+    PerformanceReadSerializer
 )
 
 
@@ -96,6 +98,10 @@ class PlayViewSet(StaffWriteReadOnlyElse):
     search_fields = ["title"]
     ordering_fields = ["title"]
 
+    def get_serializer_class(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return PlayReadSerializer
+        return PlaySerializer
 
 @extend_schema_view(
     list=extend_schema(
@@ -125,20 +131,10 @@ class PerformanceViewSet(StaffWriteReadOnlyElse):
     }
     ordering_fields = ["show_time"]
 
-    @extend_schema(
-        description="List of available seats for the performance.",
-        responses=SeatSerializer(many=True),
-        tags=["Performances"],
-    )
-    @decorators.action(detail=True, methods=["get"])
-    def available_seats(self, request, pk=None):
-        perf = self.get_object()
-        qs = (
-            perf.tickets.filter(reservation__isnull=True)
-            .values("row", "seat")
-            .order_by("row", "seat")
-        )
-        return response.Response(list(qs))
+    def get_serializer_class(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return PerformanceReadSerializer
+        return PerformanceSerializer
 
 
 @extend_schema_view(

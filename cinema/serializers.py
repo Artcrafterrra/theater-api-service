@@ -2,7 +2,7 @@ from typing import List, Tuple
 from django.db import transaction
 from django.db.models import Q
 from rest_framework import serializers
-from .models import (
+from cinema.models import (
     Actor,
     Genre,
     TheatreHall,
@@ -47,6 +47,24 @@ class PlaySerializer(serializers.ModelSerializer):
 
 
 class PerformanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Performance
+        fields = ("id", "play", "theatre_hall", "show_time")
+
+
+class PlayReadSerializer(serializers.ModelSerializer):
+    actors = ActorSerializer(many=True, read_only=True)
+    genres = GenreSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Play
+        fields = ("id", "title", "description", "actors", "genres")
+
+
+class PerformanceReadSerializer(serializers.ModelSerializer):
+    play = PlayReadSerializer(read_only=True)
+    theatre_hall = TheatreHallSerializer(read_only=True)
+
     class Meta:
         model = Performance
         fields = ("id", "play", "theatre_hall", "show_time")
