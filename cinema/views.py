@@ -24,6 +24,8 @@ from cinema.serializers import (
     ReservationListSerializer,
     PerformanceReadSerializer,
     PlayReadSerializer,
+    PlayCreateUpdateSerializer,
+    PerformanceCreateUpdateSerializer,
 )
 from cinema.pagination import DefaultPagination
 
@@ -108,7 +110,9 @@ class PlayViewSet(StaffWriteReadOnlyElse):
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
             return PlayReadSerializer
-        return PlaySerializer
+        if self.action in ("create", "update", "partial_update"):
+            return PlayCreateUpdateSerializer
+        return PlayCreateUpdateSerializer
 
 
 @extend_schema_view(
@@ -167,7 +171,9 @@ class PerformanceViewSet(StaffWriteReadOnlyElse):
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
             return PerformanceReadSerializer
-        return PerformanceSerializer
+        if self.action in ("create", "update", "partial_update"):
+            return PerformanceCreateUpdateSerializer
+        return PerformanceCreateUpdateSerializer
 
 
 @extend_schema_view(

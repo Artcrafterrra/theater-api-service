@@ -50,7 +50,6 @@ class PerformanceSerializer(serializers.ModelSerializer):
         model = Performance
         fields = ("id", "play", "theatre_hall", "show_time")
 
-
 class PlayReadSerializer(serializers.ModelSerializer):
     actors = ActorSerializer(many=True, read_only=True)
     genres = GenreSerializer(many=True, read_only=True)
@@ -64,6 +63,26 @@ class PerformanceReadSerializer(serializers.ModelSerializer):
     play = PlayReadSerializer(read_only=True)
     theatre_hall = TheatreHallSerializer(read_only=True)
 
+    class Meta:
+        model = Performance
+        fields = ("id", "play", "theatre_hall", "show_time")
+# ... existing code ...
+
+
+class PlayCreateUpdateSerializer(serializers.ModelSerializer):
+    actors = serializers.PrimaryKeyRelatedField(
+        queryset=Actor.objects.all(), many=True, required=False
+    )
+    genres = serializers.PrimaryKeyRelatedField(
+        queryset=Genre.objects.all(), many=True, required=False
+    )
+
+    class Meta:
+        model = Play
+        fields = ("id", "title", "description", "actors", "genres")
+
+
+class PerformanceCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Performance
         fields = ("id", "play", "theatre_hall", "show_time")
