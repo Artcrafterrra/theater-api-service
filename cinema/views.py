@@ -1,3 +1,5 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter, extend_schema_view
 from rest_framework import viewsets, permissions, decorators, response, status
 from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
@@ -20,6 +22,10 @@ from cinema.serializers import (
     ReservationCreateSerializer,
     ReservationListSerializer,
     TicketShortSerializer,
+    SeatSerializer,
+    ReservationCreateSerializer,
+    ReservationListSerializer,
+    TicketShortSerializer
 )
 
 
@@ -48,6 +54,38 @@ class TheatreHallViewSet(StaffWriteReadOnlyElse):
     search_fields = ["name"]
 
 
+@extend_schema_view(
+    list=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="genres__in",
+                description="Separated list of genre IDs.",
+                required=False, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="actors__in",
+                description="Separated list of actor IDs.",
+                required=False, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="search",
+                description="Search for mane or surname.",
+                required=False, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY,
+            ),
+            OpenApiParameter(
+                name="ordering",
+                description="Sorting: `title` or `-title`.",
+                required=False, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY,
+            ),
+        ],
+        tags=["Plays"],
+    ),
+    retrieve=extend_schema(tags=["Plays"]),
+    create=extend_schema(tags=["Plays"]),
+    update=extend_schema(tags=["Plays"]),
+    partial_update=extend_schema(tags=["Plays"]),
+    destroy=extend_schema(tags=["Plays"]),
+)
 class PlayViewSet(StaffWriteReadOnlyElse):
     queryset = Play.objects.prefetch_related("actors", "genres").all()
     serializer_class = PlaySerializer
@@ -59,6 +97,23 @@ class PlayViewSet(StaffWriteReadOnlyElse):
     ordering_fields = ["title"]
 
 
+@extend_schema_view(
+    list=extend_schema(
+        parameters=[
+            OpenApiParameter(name="play", description="ID paste", type=OpenApiTypes.INT, location=OpenApiParameter.QUERY),
+            OpenApiParameter(name="show_time__date", description="Date seance `YYYY-MM-DD`", type=OpenApiTypes.DATE, location=OpenApiParameter.QUERY),
+            OpenApiParameter(name="show_time__gte", description="Starts from date/time", type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
+            OpenApiParameter(name="show_time__lte", description="To date/time", type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
+            OpenApiParameter(name="ordering", description="Sorting: `show_time` or `-show_time`", type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        ],
+        tags=["Performances"],
+    ),
+    retrieve=extend_schema(tags=["Performances"]),
+    create=extend_schema(tags=["Performances"]),
+    update=extend_schema(tags=["Performances"]),
+    partial_update=extend_schema(tags=["Performances"]),
+    destroy=extend_schema(tags=["Performances"]),
+)
 class PerformanceViewSet(StaffWriteReadOnlyElse):
     queryset = Performance.objects.select_related(
         "play", "theatre_hall"
@@ -70,6 +125,11 @@ class PerformanceViewSet(StaffWriteReadOnlyElse):
     }
     ordering_fields = ["show_time"]
 
+    @extend_schema(
+        description="List of available seats for the performance.",
+        responses=SeatSerializer(many=True),
+        tags=["Performances"],
+    )
     @decorators.action(detail=True, methods=["get"])
     def available_seats(self, request, pk=None):
         perf = self.get_object()
@@ -81,6 +141,24 @@ class PerformanceViewSet(StaffWriteReadOnlyElse):
         return response.Response(list(qs))
 
 
+@extend_schema_view(
+    list=extend_schema(
+        description="My booking (only for authenticated users).",
+        responses=ReservationListSerializer(many=True),
+        tags=["Reservations"],
+    ),
+    create=extend_schema(
+        description=(
+            "Create booking places.\n\n"
+            "**Attention:** in the `seats` field, provide a list of `row/seat` pairs. "
+            "The transaction ensures that occupied seats will not be booked twice."
+        ),
+        request=ReservationCreateSerializer,
+        responses=ReservationListSerializer,
+        tags=["Reservations"],
+        examples=[],
+    ),
+)
 class ReservationViewSet(
     viewsets.GenericViewSet,
 ):
