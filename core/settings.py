@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -99,6 +100,19 @@ DATABASES = {
     }
 }
 
+if os.environ.get("DB_ENGINE") or os.environ.get("DB_HOST"):
+    DATABASES["default"] = {
+        "ENGINE": os.environ.get("DB_ENGINE", "django.db.backends.postgresql"),
+        "NAME": os.environ.get("DB_NAME", "cinema"),
+        "USER": os.environ.get("DB_USER", "cinema"),
+        "PASSWORD": os.environ.get("DB_PASSWORD", "cinema"),
+        "HOST": os.environ.get("DB_HOST", "localhost"),
+        "PORT": os.environ.get("DB_PORT", "5432"),
+    }
+
+_env_allowed = os.environ.get("ALLOWED_HOSTS")
+if _env_allowed:
+    ALLOWED_HOSTS = [h.strip() for h in _env_allowed.split(",") if h.strip()]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
