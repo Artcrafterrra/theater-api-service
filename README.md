@@ -1,6 +1,6 @@
-# Cinema API Service
+# Ticket booking service API Service
 
-Cinema API Service is a Django-based RESTful API for managing theatre-related data: plays, performances, actors, genres, theatre halls, and reservations (tickets). It provides endpoints to create, update, and retrieve data, plus JWT authentication and interactive API documentation.
+Ticket booking service API Service is a Django-based RESTful API for managing theatre-related data: plays, performances, actors, genres, theatre halls, and reservations (tickets). It provides endpoints to create, update, and retrieve data, plus JWT authentication and interactive API documentation.
 
 ## Table of Contents
 - Introduction
